@@ -1,0 +1,19 @@
+{
+    "name": "emil/git_cl",
+    "autoload": {
+        "psr-4": {
+            "Emil\\GitCl\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "emo-kostadinov",
+            "email": "emilgold06@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "laravel/pint": "^1.21",
+        "rector/rector": "^2.0",
+        "phpunit/phpunit": "^12.0"
+    }
+}
