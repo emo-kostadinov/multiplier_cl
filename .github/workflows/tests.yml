@@ -42,5 +42,9 @@ jobs:
       - name: Run PHPUnit Tests
         run: ./vendor/bin/phpunit
 
-      - name: Run Pest Tests
+      - name: Make Pest executable
+        run: chmod +x ./vendor/bin/pest
+      
+      - name: Run Pest tests
         run: ./vendor/bin/pest
+      
