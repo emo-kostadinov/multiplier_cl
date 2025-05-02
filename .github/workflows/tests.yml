@@ -27,6 +27,9 @@ jobs:
       - name: Make Pint executable
         run: chmod +x ./vendor/bin/pint
 
+      - name: Make Rector executable
+        run: chmod +x ./vendor/bin/rector
+
       - name: Run Pint
         run: ./vendor/bin/pint --test
 
