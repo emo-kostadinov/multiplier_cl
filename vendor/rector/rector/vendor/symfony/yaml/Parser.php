@@ -8,10 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RectorPrefix202503\Symfony\Component\Yaml;
+namespace RectorPrefix202504\Symfony\Component\Yaml;
 
-use RectorPrefix202503\Symfony\Component\Yaml\Exception\ParseException;
-use RectorPrefix202503\Symfony\Component\Yaml\Tag\TaggedValue;
+use RectorPrefix202504\Symfony\Component\Yaml\Exception\ParseException;
+use RectorPrefix202504\Symfony\Component\Yaml\Tag\TaggedValue;
 /**
  * Parser parses YAML strings to convert them to PHP arrays.
  *
@@ -960,7 +960,15 @@ class Parser
     private function lexUnquotedString(int &$cursor) : string
     {
         $offset = $cursor;
-        $cursor += \strcspn($this->currentLine, '[]{},:', $cursor);
+        while ($cursor < \strlen($this->currentLine)) {
+            if (\in_array($this->currentLine[$cursor], ['[', ']', '{', '}', ',', ':'], \true)) {
+                break;
+            }
+            if (\in_array($this->currentLine[$cursor], [' ', "\t"], \true) && '#' === ($this->currentLine[$cursor + 1] ?? '')) {
+                break;
+            }
+            ++$cursor;
+        }
         if ($cursor === $offset) {
             throw new ParseException('Malformed unquoted YAML string.');
         }
@@ -1023,7 +1031,7 @@ class Parser
     {
         $whitespacesConsumed = 0;
         do {
-            $whitespaceOnlyTokenLength = \strspn($this->currentLine, ' ', $cursor);
+            $whitespaceOnlyTokenLength = \strspn($this->currentLine, " \t", $cursor);
             $whitespacesConsumed += $whitespaceOnlyTokenLength;
             $cursor += $whitespaceOnlyTokenLength;
             if (isset($this->currentLine[$cursor])) {

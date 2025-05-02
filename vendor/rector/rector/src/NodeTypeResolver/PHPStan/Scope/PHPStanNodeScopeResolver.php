@@ -3,7 +3,6 @@
 declare (strict_types=1);
 namespace Rector\NodeTypeResolver\PHPStan\Scope;
 
-use PHPStan\Analyser\UndefinedVariableException;
 use Error;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
@@ -87,6 +86,7 @@ use PhpParser\NodeTraverser;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\ScopeContext;
+use PHPStan\Analyser\UndefinedVariableException;
 use PHPStan\Node\FunctionCallableNode;
 use PHPStan\Node\InstantiationCallableNode;
 use PHPStan\Node\MethodCallableNode;
@@ -106,7 +106,7 @@ use Rector\NodeTypeResolver\Node\AttributeKey;
 use Rector\NodeTypeResolver\PHPStan\Scope\Contract\NodeVisitor\ScopeResolverNodeVisitorInterface;
 use Rector\PhpParser\Node\CustomNode\FileWithoutNamespace;
 use Rector\Util\Reflection\PrivatesAccessor;
-use RectorPrefix202503\Webmozart\Assert\Assert;
+use RectorPrefix202504\Webmozart\Assert\Assert;
 /**
  * @inspired by https://github.com/silverstripe/silverstripe-upgrader/blob/532182b23e854d02e0b27e68ebc394f436de0682/src/UpgradeRule/PHP/Visitor/PHPStanScopeVisitor.php
  * - https://github.com/silverstripe/silverstripe-upgrader/pull/57/commits/e5c7cfa166ad940d9d4ff69537d9f7608e992359#diff-5e0807bb3dc03d6a8d8b6ad049abd774

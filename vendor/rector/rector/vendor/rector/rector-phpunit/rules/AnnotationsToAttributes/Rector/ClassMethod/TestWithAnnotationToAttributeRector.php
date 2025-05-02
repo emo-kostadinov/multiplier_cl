@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\PHPUnit\AnnotationsToAttributes\Rector\ClassMethod;
 
-use RectorPrefix202503\Nette\Utils\Json;
+use RectorPrefix202504\Nette\Utils\Json;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\PhpDocParser\Ast\PhpDoc\GenericTagValueNode;
@@ -136,7 +136,7 @@ CODE_SAMPLE
             $genericTagValueNode = $testWithPhpDocTagNode->value;
             $testWithItems = \explode("\n", \trim($genericTagValueNode->value));
             foreach ($testWithItems as $testWithItem) {
-                $jsonArray = Json::decode(\trim($testWithItem), Json::FORCE_ARRAY);
+                $jsonArray = Json::decode(\trim($testWithItem), \true);
                 $attributeGroups[] = $this->phpAttributeGroupFactory->createFromClassWithItems(self::TEST_WITH_ATTRIBUTE, [$jsonArray]);
             }
         }

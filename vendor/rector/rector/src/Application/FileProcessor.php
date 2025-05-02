@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\Application;
 
-use RectorPrefix202503\Nette\Utils\FileSystem;
+use RectorPrefix202504\Nette\Utils\FileSystem;
 use PHPStan\AnalysedCodeException;
 use PHPStan\Parser\ParserErrorsException;
 use Rector\Caching\Detector\ChangedFilesDetector;
@@ -22,7 +22,7 @@ use Rector\ValueObject\Application\File;
 use Rector\ValueObject\Configuration;
 use Rector\ValueObject\Error\SystemError;
 use Rector\ValueObject\FileProcessResult;
-use RectorPrefix202503\Symfony\Component\Console\Style\SymfonyStyle;
+use RectorPrefix202504\Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 final class FileProcessor
 {
@@ -113,6 +113,9 @@ final class FileProcessor
             // when changed, set final status changed to true
             // to ensure it make sense to verify in next process when needed
             $file->changeHasChanged(\true);
+        }
+        $rectorWithLineChanges = $file->getRectorWithLineChanges();
+        if ($file->hasChanged() || $rectorWithLineChanges !== []) {
             $currentFileDiff = $this->fileDiffFactory->createFileDiffWithLineChanges($configuration->shouldShowDiffs(), $file, $file->getOriginalFileContent(), $file->getFileContent(), $file->getRectorWithLineChanges());
             $file->setFileDiff($currentFileDiff);
         }

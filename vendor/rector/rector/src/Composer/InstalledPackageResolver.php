@@ -3,11 +3,12 @@
 declare (strict_types=1);
 namespace Rector\Composer;
 
-use RectorPrefix202503\Nette\Utils\FileSystem;
-use RectorPrefix202503\Nette\Utils\Json;
+use RectorPrefix202504\Nette\Utils\FileSystem;
+use RectorPrefix202504\Nette\Utils\Json;
 use Rector\Composer\ValueObject\InstalledPackage;
 use Rector\Exception\ShouldNotHappenException;
-use RectorPrefix202503\Webmozart\Assert\Assert;
+use Rector\Skipper\FileSystem\PathNormalizer;
+use RectorPrefix202504\Webmozart\Assert\Assert;
 /**
  * @see \Rector\Tests\Composer\InstalledPackageResolverTest
  */
@@ -39,7 +40,7 @@ final class InstalledPackageResolver
         if ($this->resolvedInstalledPackages !== []) {
             return $this->resolvedInstalledPackages;
         }
-        $installedPackagesFilePath = $this->projectDirectory . '/vendor/composer/installed.json';
+        $installedPackagesFilePath = self::resolveVendorDir() . '/composer/installed.json';
         if (!\file_exists($installedPackagesFilePath)) {
             throw new ShouldNotHappenException('The installed package json not found. Make sure you run `composer update` and the "vendor/composer/installed.json" file exists');
         }
@@ -60,5 +61,20 @@ final class InstalledPackageResolver
             $installedPackages[] = new InstalledPackage($package['name'], $package['version_normalized']);
         }
         return $installedPackages;
+    }
+    private function resolveVendorDir() : string
+    {
+        $projectComposerJsonFilePath = $this->projectDirectory . '/composer.json';
+        if (\file_exists($projectComposerJsonFilePath)) {
+            $projectComposerContents = FileSystem::read($projectComposerJsonFilePath);
+            $projectComposerJson = Json::decode($projectComposerContents, \true);
+            if (isset($projectComposerJson['config']['vendor-dir']) && \is_string($projectComposerJson['config']['vendor-dir'])) {
+                $realPathVendorDir = \realpath($projectComposerJson['config']['vendor-dir']) ?: '';
+                $normalizedRealPathVendorDir = PathNormalizer::normalize($realPathVendorDir);
+                $normalizedVendorDir = PathNormalizer::normalize($projectComposerJson['config']['vendor-dir']);
+                return $normalizedRealPathVendorDir === $normalizedVendorDir ? $projectComposerJson['config']['vendor-dir'] : $this->projectDirectory . '/' . $projectComposerJson['config']['vendor-dir'];
+            }
+        }
+        return $this->projectDirectory . '/vendor';
     }
 }

@@ -5,10 +5,10 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 declare (strict_types=1);
-namespace RectorPrefix202503\Nette\Utils;
+namespace RectorPrefix202504\Nette\Utils;
 
-use RectorPrefix202503\JetBrains\PhpStorm\Language;
-use RectorPrefix202503\Nette;
+use RectorPrefix202504\JetBrains\PhpStorm\Language;
+use RectorPrefix202504\Nette;
 use function is_array, is_object, strlen;
 /**
  * String tools library.
@@ -20,7 +20,7 @@ class Strings
     /** @deprecated use Strings::TrimCharacters */
     public const TRIM_CHARACTERS = self::TrimCharacters;
     /**
-     * @deprecated use Nette\Utils\Validator::isUnicode()
+     * @deprecated use Nette\Utils\Validators::isUnicode()
      */
     public static function checkEncoding(string $s) : bool
     {

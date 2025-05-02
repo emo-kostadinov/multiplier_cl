@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\Symfony\CodeQuality\Rector\Class_;
 
-use RectorPrefix202503\Nette\Utils\Strings;
+use RectorPrefix202504\Nette\Utils\Strings;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
@@ -152,14 +152,14 @@ CODE_SAMPLE
      */
     private function hasAsListenerAttribute(Class_ $class) : bool
     {
-        if ($this->phpAttributeAnalyzer->hasPhpAttribute($class, SymfonyAttribute::EVENT_LISTENER_ATTRIBUTE)) {
+        if ($this->phpAttributeAnalyzer->hasPhpAttribute($class, SymfonyAttribute::AS_EVENT_LISTENER)) {
             return \true;
         }
         foreach ($class->getMethods() as $classMethod) {
             if (!$classMethod->isPublic()) {
                 continue;
             }
-            if ($this->phpAttributeAnalyzer->hasPhpAttribute($classMethod, SymfonyAttribute::EVENT_LISTENER_ATTRIBUTE)) {
+            if ($this->phpAttributeAnalyzer->hasPhpAttribute($classMethod, SymfonyAttribute::AS_EVENT_LISTENER)) {
                 return \true;
             }
         }

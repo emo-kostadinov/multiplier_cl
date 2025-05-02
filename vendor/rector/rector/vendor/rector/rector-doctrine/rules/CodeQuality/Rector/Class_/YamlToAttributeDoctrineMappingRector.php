@@ -17,7 +17,7 @@ use Rector\ValueObject\PhpVersion;
 use Rector\VersionBonding\Contract\MinPhpVersionInterface;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use RectorPrefix202503\Webmozart\Assert\Assert;
+use RectorPrefix202504\Webmozart\Assert\Assert;
 /**
  * @see \Rector\Doctrine\Tests\CodeQuality\Rector\Class_\YamlToAttributeDoctrineMappingRector\YamlToAttributeDoctrineMappingRectorTest
  */
@@ -84,7 +84,10 @@ CODE_SAMPLE
         if (!$entityMapping instanceof EntityMapping) {
             return null;
         }
-        $this->yamlToAttributeTransformer->transform($node, $entityMapping);
+        $hasChanged = $this->yamlToAttributeTransformer->transform($node, $entityMapping);
+        if (!$hasChanged) {
+            return null;
+        }
         return $node;
     }
     /**

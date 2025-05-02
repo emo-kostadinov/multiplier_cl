@@ -5,7 +5,7 @@ namespace Rector\ValueObject;
 
 use Rector\ValueObject\Error\SystemError;
 use Rector\ValueObject\Reporting\FileDiff;
-use RectorPrefix202503\Webmozart\Assert\Assert;
+use RectorPrefix202504\Webmozart\Assert\Assert;
 final class ProcessResult
 {
     /**
@@ -38,8 +38,11 @@ final class ProcessResult
     /**
      * @return FileDiff[]
      */
-    public function getFileDiffs() : array
+    public function getFileDiffs(bool $onlyWithChanges = \true) : array
     {
+        if ($onlyWithChanges) {
+            return \array_filter($this->fileDiffs, fn(FileDiff $fileDiff): bool => $fileDiff->getDiff() !== '');
+        }
         return $this->fileDiffs;
     }
     /**

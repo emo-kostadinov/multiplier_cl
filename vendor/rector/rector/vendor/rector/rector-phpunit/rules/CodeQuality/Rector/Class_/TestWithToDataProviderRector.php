@@ -3,8 +3,8 @@
 declare (strict_types=1);
 namespace Rector\PHPUnit\CodeQuality\Rector\Class_;
 
-use RectorPrefix202503\Nette\Utils\Json;
-use RectorPrefix202503\Nette\Utils\Strings;
+use RectorPrefix202504\Nette\Utils\Json;
+use RectorPrefix202504\Nette\Utils\Strings;
 use PhpParser\Modifiers;
 use PhpParser\Node;
 use PhpParser\Node\ArrayItem;
@@ -172,7 +172,7 @@ CODE_SAMPLE
         $testWithItems = \explode("\n", \trim($genericTagValueNode->value));
         $jsonArray = [];
         foreach ($testWithItems as $testWithItem) {
-            $jsonArray[] = Json::decode(\trim($testWithItem), Json::FORCE_ARRAY);
+            $jsonArray[] = Json::decode(\trim($testWithItem), \true);
         }
         return $jsonArray;
     }

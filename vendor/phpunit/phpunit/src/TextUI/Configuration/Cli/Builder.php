@@ -57,10 +57,12 @@ final class Builder
         'coverage-xml=',
         'path-coverage',
         'disallow-test-output',
+        'display-all-issues',
         'display-incomplete',
         'display-skipped',
         'display-deprecations',
         'display-phpunit-deprecations',
+        'display-phpunit-notices',
         'display-errors',
         'display-notices',
         'display-warnings',
@@ -106,8 +108,10 @@ final class Builder
         'reverse-list',
         'static-backup',
         'stderr',
+        'fail-on-all-issues',
         'fail-on-deprecation',
         'fail-on-phpunit-deprecation',
+        'fail-on-phpunit-notice',
         'fail-on-empty-test-suite',
         'fail-on-incomplete',
         'fail-on-notice',
@@ -195,10 +199,12 @@ final class Builder
         $defaultTimeLimit                  = null;
         $disableCodeCoverageIgnore         = null;
         $disallowTestOutput                = null;
+        $displayAllIssues                  = null;
         $displayIncomplete                 = null;
         $displaySkipped                    = null;
         $displayDeprecations               = null;
         $displayPhpunitDeprecations        = null;
+        $displayPhpunitNotices             = null;
         $displayErrors                     = null;
         $displayNotices                    = null;
         $displayWarnings                   = null;
@@ -206,8 +212,10 @@ final class Builder
         $excludeGroups                     = null;
         $executionOrder                    = null;
         $executionOrderDefects             = null;
+        $failOnAllIssues                   = null;
         $failOnDeprecation                 = null;
         $failOnPhpunitDeprecation          = null;
+        $failOnPhpunitNotice               = null;
         $failOnEmptyTestSuite              = null;
         $failOnIncomplete                  = null;
         $failOnNotice                      = null;
@@ -278,7 +286,11 @@ final class Builder
 
             switch ($option[0]) {
                 case '--colors':
-                    $colors = $option[1] ?: \PHPUnit\TextUI\Configuration\Configuration::COLOR_AUTO;
+                    $colors = \PHPUnit\TextUI\Configuration\Configuration::COLOR_AUTO;
+
+                    if ($option[1] !== null) {
+                        $colors = $option[1];
+                    }
 
                     break;
 
@@ -627,6 +639,11 @@ final class Builder
 
                     break;
 
+                case '--fail-on-all-issues':
+                    $failOnAllIssues = true;
+
+                    break;
+
                 case '--fail-on-deprecation':
                     $failOnDeprecation = true;
 
@@ -634,6 +651,11 @@ final class Builder
 
                 case '--fail-on-phpunit-deprecation':
                     $failOnPhpunitDeprecation = true;
+
+                    break;
+
+                case '--fail-on-phpunit-notice':
+                    $failOnPhpunitNotice = true;
 
                     break;
 
@@ -821,6 +843,11 @@ final class Builder
 
                     break;
 
+                case '--display-all-issues':
+                    $displayAllIssues = true;
+
+                    break;
+
                 case '--display-incomplete':
                     $displayIncomplete = true;
 
@@ -838,6 +865,11 @@ final class Builder
 
                 case '--display-phpunit-deprecations':
                     $displayPhpunitDeprecations = true;
+
+                    break;
+
+                case '--display-phpunit-notices':
+                    $displayPhpunitNotices = true;
 
                     break;
 
@@ -958,15 +990,11 @@ final class Builder
             }
         }
 
-        if (empty($iniSettings)) {
+        if ($iniSettings === []) {
             $iniSettings = null;
         }
 
-        if (empty($coverageFilter)) {
-            $coverageFilter = null;
-        }
-
-        if (empty($extensions)) {
+        if ($extensions === []) {
             $extensions = null;
         }
 
@@ -1001,8 +1029,10 @@ final class Builder
             $excludeGroups,
             $executionOrder,
             $executionOrderDefects,
+            $failOnAllIssues,
             $failOnDeprecation,
             $failOnPhpunitDeprecation,
+            $failOnPhpunitNotice,
             $failOnEmptyTestSuite,
             $failOnIncomplete,
             $failOnNotice,
@@ -1059,10 +1089,12 @@ final class Builder
             $testSuite,
             $excludeTestSuite,
             $useDefaultConfiguration,
+            $displayAllIssues,
             $displayIncomplete,
             $displaySkipped,
             $displayDeprecations,
             $displayPhpunitDeprecations,
+            $displayPhpunitNotices,
             $displayErrors,
             $displayNotices,
             $displayWarnings,

@@ -6,10 +6,10 @@ namespace Rector\Parallel\Command;
 use Rector\ChangesReporting\Output\JsonOutputFormatter;
 use Rector\Configuration\Option;
 use Rector\FileSystem\FilePathHelper;
-use RectorPrefix202503\Symfony\Component\Console\Command\Command;
-use RectorPrefix202503\Symfony\Component\Console\Input\InputInterface;
-use RectorPrefix202503\Symplify\EasyParallel\Exception\ParallelShouldNotHappenException;
-use RectorPrefix202503\Symplify\EasyParallel\Reflection\CommandFromReflectionFactory;
+use RectorPrefix202504\Symfony\Component\Console\Command\Command;
+use RectorPrefix202504\Symfony\Component\Console\Input\InputInterface;
+use RectorPrefix202504\Symplify\EasyParallel\Exception\ParallelShouldNotHappenException;
+use RectorPrefix202504\Symplify\EasyParallel\Reflection\CommandFromReflectionFactory;
 /**
  * @see \Rector\Tests\Parallel\Command\WorkerCommandLineFactoryTest
  * @todo possibly extract to symplify/easy-parallel
@@ -39,6 +39,10 @@ final class WorkerCommandLineFactory
     public function create(string $mainScript, string $mainCommandClass, string $workerCommandName, InputInterface $input, string $identifier, int $port) : string
     {
         $commandArguments = \array_slice($_SERVER['argv'], 1);
+        // add implicit "process" command name if missing
+        if ($commandArguments !== [] && ($commandArguments[0] !== 'process' && $commandArguments[0] !== 'p') && !\defined('PHPUNIT_COMPOSER_INSTALL')) {
+            $commandArguments = \array_merge(['process'], $commandArguments);
+        }
         $args = \array_merge([\PHP_BINARY, $mainScript], $commandArguments);
         $workerCommandArray = [];
         $mainCommand = $this->commandFromReflectionFactory->create($mainCommandClass);

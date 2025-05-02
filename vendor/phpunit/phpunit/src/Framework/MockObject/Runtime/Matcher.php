@@ -104,7 +104,7 @@ final class Matcher
                 ->__phpunit_getInvocationHandler()
                 ->lookupMatcher($this->afterMatchBuilderId);
 
-            if (!$matcher) {
+            if ($matcher === null) {
                 throw new MatchBuilderNotFoundException($this->afterMatchBuilderId);
             }
         }
@@ -125,7 +125,7 @@ final class Matcher
             );
         }
 
-        if ($this->stub) {
+        if ($this->stub !== null) {
             return $this->stub->invoke($invocation);
         }
 
@@ -145,7 +145,7 @@ final class Matcher
                 ->__phpunit_getInvocationHandler()
                 ->lookupMatcher($this->afterMatchBuilderId);
 
-            if (!$matcher) {
+            if ($matcher === null) {
                 throw new MatchBuilderNotFoundException($this->afterMatchBuilderId);
             }
 

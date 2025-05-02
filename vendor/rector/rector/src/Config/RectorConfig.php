@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\Config;
 
-use RectorPrefix202503\Illuminate\Container\Container;
+use RectorPrefix202504\Illuminate\Container\Container;
 use Rector\Caching\Contract\ValueObject\Storage\CacheStorageInterface;
 use Rector\Configuration\Option;
 use Rector\Configuration\Parameter\SimpleParameterProvider;
@@ -19,11 +19,8 @@ use Rector\Validation\RectorConfigValidator;
 use Rector\ValueObject\Configuration\LevelOverflow;
 use Rector\ValueObject\PhpVersion;
 use Rector\ValueObject\PolyfillPackage;
-use RectorPrefix202503\Symfony\Component\Console\Command\Command;
-use RectorPrefix202503\Symfony\Component\Console\Input\ArrayInput;
-use RectorPrefix202503\Symfony\Component\Console\Output\ConsoleOutput;
-use RectorPrefix202503\Symfony\Component\Console\Style\SymfonyStyle;
-use RectorPrefix202503\Webmozart\Assert\Assert;
+use RectorPrefix202504\Symfony\Component\Console\Command\Command;
+use RectorPrefix202504\Webmozart\Assert\Assert;
 /**
  * @api
  */
@@ -37,8 +34,15 @@ final class RectorConfig extends Container
      * @var string[]
      */
     private array $autotagInterfaces = [Command::class, ResetableInterface::class];
+    private static ?bool $recreated = null;
     public static function configure() : RectorConfigBuilder
     {
+        if (self::$recreated === null) {
+            self::$recreated = \false;
+        } elseif (self::$recreated === \false) {
+            self::$recreated = \true;
+        }
+        SimpleParameterProvider::setParameter(Option::IS_RECTORCONFIG_BUILDER_RECREATED, self::$recreated);
         return new RectorConfigBuilder();
     }
     /**
@@ -65,20 +69,6 @@ final class RectorConfig extends Container
         foreach ($sets as $set) {
             Assert::fileExists($set);
             $this->import($set);
-        }
-        // notify about deprecated sets
-        foreach ($sets as $set) {
-            if (\strpos($set, 'deprecated-level-set') === \false) {
-                continue;
-            }
-            // display only on main command run, skip spamming in workers
-            $commandArguments = $_SERVER['argv'];
-            if (!\in_array('worker', $commandArguments, \true)) {
-                // show warning, to avoid confusion
-                $symfonyStyle = new SymfonyStyle(new ArrayInput([]), new ConsoleOutput());
-                $symfonyStyle->warning("The Symfony/Twig/PHPUnit level sets have been deprecated since Rector 0.19.2 due to heavy performance loads and conflicting overrides. Instead, please use the latest major set.\n\nFor more information, visit https://getrector.com/blog/5-common-mistakes-in-rector-config-and-how-to-avoid-them");
-                break;
-            }
         }
         // for cache invalidation in case of sets change
         SimpleParameterProvider::addParameter(Option::REGISTERED_RECTOR_SETS, $sets);

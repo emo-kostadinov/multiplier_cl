@@ -5,9 +5,9 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 declare (strict_types=1);
-namespace RectorPrefix202503\Nette\Utils;
+namespace RectorPrefix202504\Nette\Utils;
 
-use RectorPrefix202503\Nette;
+use RectorPrefix202504\Nette;
 /**
  * Utilities for iterables.
  */
@@ -214,6 +214,8 @@ final class Iterables
                 return self::toIterator($iterable->getIterator());
             case \is_array($iterable):
                 return new \ArrayIterator($iterable);
+            default:
+                throw new Nette\ShouldNotHappenException();
         }
     }
 }

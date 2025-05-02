@@ -12,11 +12,13 @@ namespace PHPUnit\Runner;
 use function assert;
 use function file_put_contents;
 use function sprintf;
+use function sys_get_temp_dir;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Output\Printer;
+use PHPUnit\Util\Filesystem;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Exception as CodeCoverageException;
@@ -31,6 +33,7 @@ use SebastianBergmann\CodeCoverage\Report\PHP as PhpReport;
 use SebastianBergmann\CodeCoverage\Report\Text as TextReport;
 use SebastianBergmann\CodeCoverage\Report\Thresholds;
 use SebastianBergmann\CodeCoverage\Report\Xml\Facade as XmlReport;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\CacheWarmer;
 use SebastianBergmann\CodeCoverage\Test\Target\TargetCollection;
 use SebastianBergmann\CodeCoverage\Test\Target\ValidationFailure;
 use SebastianBergmann\CodeCoverage\Test\TestSize\TestSize;
@@ -50,10 +53,14 @@ final class CodeCoverage
 {
     private static ?self $instance                                      = null;
     private ?\SebastianBergmann\CodeCoverage\CodeCoverage $codeCoverage = null;
-    private ?Driver $driver                                             = null;
-    private bool $collecting                                            = false;
-    private ?TestCase $test                                             = null;
-    private ?Timer $timer                                               = null;
+
+    /**
+     * @phpstan-ignore property.internalClass
+     */
+    private ?Driver $driver  = null;
+    private bool $collecting = false;
+    private ?TestCase $test  = null;
+    private ?Timer $timer    = null;
 
     public static function instance(): self
     {
@@ -79,7 +86,17 @@ final class CodeCoverage
         }
 
         if ($configuration->hasCoverageCacheDirectory()) {
-            $this->codeCoverage()->cacheStaticAnalysis($configuration->coverageCacheDirectory());
+            $coverageCacheDirectory = $configuration->coverageCacheDirectory();
+        } else {
+            $candidate = sys_get_temp_dir() . '/phpunit-code-coverage-cache';
+
+            if (Filesystem::createDirectory($candidate)) {
+                $coverageCacheDirectory = $candidate;
+            }
+        }
+
+        if (isset($coverageCacheDirectory)) {
+            $this->codeCoverage()->cacheStaticAnalysis($coverageCacheDirectory);
         }
 
         $this->codeCoverage()->excludeSubclassesOfThisClassFromUnintentionallyCoveredCodeCheck(Comparator::class);
@@ -119,6 +136,22 @@ final class CodeCoverage
 
             $this->deactivate();
         }
+
+        if (isset($coverageCacheDirectory) && $configuration->includeUncoveredFiles()) {
+            EventFacade::emitter()->testRunnerStartedStaticAnalysisForCodeCoverage();
+
+            $statistics = (new CacheWarmer)->warmCache(
+                $coverageCacheDirectory,
+                !$configuration->disableCodeCoverageIgnore(),
+                $configuration->ignoreDeprecatedCodeUnitsFromCodeCoverage(),
+                $codeCoverageFilterRegistry->get(),
+            );
+
+            EventFacade::emitter()->testRunnerFinishedStaticAnalysisForCodeCoverage(
+                $statistics['cacheHits'],
+                $statistics['cacheMisses'],
+            );
+        }
     }
 
     /**
@@ -134,9 +167,12 @@ final class CodeCoverage
         return $this->codeCoverage;
     }
 
-    public function driver(): Driver
+    /**
+     * @return non-empty-string
+     */
+    public function driverNameAndVersion(): string
     {
-        return $this->driver;
+        return $this->driver->nameAndVersion();
     }
 
     public function start(TestCase $test): void

@@ -3,8 +3,8 @@
 declare (strict_types=1);
 namespace Rector\Doctrine\NodeAnalyzer;
 
-use RectorPrefix202503\Nette\Utils\FileSystem;
-use RectorPrefix202503\Nette\Utils\Strings;
+use RectorPrefix202504\Nette\Utils\FileSystem;
+use RectorPrefix202504\Nette\Utils\Strings;
 use PHPStan\Reflection\ReflectionProvider;
 use Rector\Exception\ShouldNotHappenException;
 final class RepositoryClassResolver
@@ -47,6 +47,9 @@ final class RepositoryClassResolver
             }
         } else {
             $repositoryClass = $match['repositoryClass'];
+        }
+        if ($repositoryClass === null) {
+            return null;
         }
         if (!$this->reflectionProvider->hasClass($repositoryClass)) {
             throw new ShouldNotHappenException(\sprintf('Repository class "%s" for entity "%s" does not exist', $repositoryClass, $entityClassName));

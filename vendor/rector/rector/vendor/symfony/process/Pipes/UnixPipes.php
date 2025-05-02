@@ -8,9 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RectorPrefix202503\Symfony\Component\Process\Pipes;
+namespace RectorPrefix202504\Symfony\Component\Process\Pipes;
 
-use RectorPrefix202503\Symfony\Component\Process\Process;
+use RectorPrefix202504\Symfony\Component\Process\Process;
 /**
  * UnixPipes implementation uses unix pipes as handles.
  *
@@ -55,7 +55,7 @@ class UnixPipes extends AbstractPipes
             return [['file', '/dev/tty', 'r'], ['file', '/dev/tty', 'w'], ['file', '/dev/tty', 'w']];
         }
         if ($this->ptyMode && Process::isPtySupported()) {
-            return [['pty'], ['pty'], ['pty']];
+            return [['pty'], ['pty'], ['pipe', 'w']];
         }
         return [
             ['pipe', 'r'],

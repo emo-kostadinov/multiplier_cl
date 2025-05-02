@@ -205,6 +205,11 @@ final class Option
      */
     public const REGISTERED_RECTOR_SETS = 'registered_rector_sets';
     /**
+     * @internal For verify RectorConfigBuilder instance recreated
+     * @var string
+     */
+    public const IS_RECTORCONFIG_BUILDER_RECREATED = 'is_rectorconfig_builder_recreated';
+    /**
      * @internal For verify skipped rules exists in registered rules
      * @var string
      */
@@ -249,4 +254,8 @@ final class Option
      * @internal The other half of ROOT_STANDALONE_REGISTERED_RULES to compare
      */
     public const SET_REGISTERED_RULES = 'set_registered_rules';
+    /**
+     * @internal to allow process file without extension if explicitly registered
+     */
+    public const FILES_WITHOUT_EXTENSION = 'files_without_extension';
 }

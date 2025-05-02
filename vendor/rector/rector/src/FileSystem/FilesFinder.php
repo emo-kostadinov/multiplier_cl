@@ -3,14 +3,14 @@
 declare (strict_types=1);
 namespace Rector\FileSystem;
 
-use RectorPrefix202503\Nette\Utils\FileSystem;
+use RectorPrefix202504\Nette\Utils\FileSystem;
 use Rector\Caching\Detector\ChangedFilesDetector;
 use Rector\Caching\UnchangedFilesFilter;
 use Rector\Configuration\Option;
 use Rector\Configuration\Parameter\SimpleParameterProvider;
 use Rector\Skipper\Skipper\PathSkipper;
 use Rector\ValueObject\Configuration;
-use RectorPrefix202503\Symfony\Component\Finder\Finder;
+use RectorPrefix202504\Symfony\Component\Finder\Finder;
 /**
  * @see \Rector\Tests\FileSystem\FilesFinder\FilesFinderTest
  */
@@ -78,6 +78,8 @@ final class FilesFinder
             $fileWithSuffixFilter = fn(): bool => \true;
         }
         $filteredFilePaths = \array_filter($filteredFilePaths, $fileWithSuffixFilter === null ? fn($value, $key): bool => !empty($value) : $fileWithSuffixFilter, $fileWithSuffixFilter === null ? \ARRAY_FILTER_USE_BOTH : 0);
+        // add file without extension after file extension filter
+        $filteredFilePaths = \array_merge($filteredFilePaths, SimpleParameterProvider::provideArrayParameter(Option::FILES_WITHOUT_EXTENSION));
         $filteredFilePaths = \array_filter($filteredFilePaths, function (string $file) : bool {
             if ($this->isStartWithShortPHPTag(FileSystem::read($file))) {
                 SimpleParameterProvider::addParameter(Option::SKIPPED_START_WITH_SHORT_OPEN_TAG_FILES, $this->filePathHelper->relativePath($file));

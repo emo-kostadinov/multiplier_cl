@@ -41,7 +41,7 @@ use Rector\ValueObject\PhpVersionFeature;
 use Rector\VersionBonding\Contract\MinPhpVersionInterface;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use RectorPrefix202503\Webmozart\Assert\Assert;
+use RectorPrefix202504\Webmozart\Assert\Assert;
 /**
  * @see \Rector\Tests\Php80\Rector\Class_\AnnotationToAttributeRector\AnnotationToAttributeRectorTest
  * @see \Rector\Tests\Php80\Rector\Class_\AnnotationToAttributeRector\Php81NestedAttributesRectorTest
@@ -174,11 +174,26 @@ CODE_SAMPLE
     public function configure(array $configuration) : void
     {
         Assert::allIsAOf($configuration, AnnotationToAttribute::class);
-        $this->annotationsToAttributes = $configuration;
+        $this->annotationsToAttributes = $this->resolveWithChangedAttributesClass($configuration);
     }
     public function provideMinPhpVersion() : int
     {
         return PhpVersionFeature::ATTRIBUTES;
+    }
+    /**
+     * @param AnnotationToAttribute[] $configuration
+     * @return AnnotationToAttribute[] $configuration
+     */
+    private function resolveWithChangedAttributesClass(array $configuration) : array
+    {
+        foreach ($configuration as $config) {
+            /** @var AnnotationToAttribute $config */
+            if ($config->getAttributeClass() !== $config->getTag()) {
+                // add to make sure apply after use statement changed
+                $configuration[] = new AnnotationToAttribute($config->getAttributeClass(), $config->getAttributeClass(), $config->getClassReferenceFields(), $config->getUseValueAsAttributeArgument());
+            }
+        }
+        return $configuration;
     }
     /**
      * @return AttributeGroup[]

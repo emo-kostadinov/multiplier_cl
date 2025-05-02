@@ -15,6 +15,7 @@ use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Ternary;
 use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\ClassConst;
@@ -281,6 +282,9 @@ final class NodeTypeResolver
     public function isMethodStaticCallOrClassMethodObjectType(Node $node, ObjectType $objectType) : bool
     {
         if ($node instanceof MethodCall || $node instanceof NullsafeMethodCall) {
+            if ($this->isEnumTypeMatch($node, $objectType)) {
+                return \true;
+            }
             // method call is variable return
             return $this->isObjectType($node->var, $objectType);
         }
@@ -486,15 +490,38 @@ final class NodeTypeResolver
                 return $scope->getNativeType($expr);
             }
             $functionName = new Name((string) $this->nodeNameResolver->getName($expr));
-            if (!$this->reflectionProvider->hasFunction($functionName, $scope)) {
+            if (!$this->reflectionProvider->hasFunction($functionName, null)) {
                 return $scope->getNativeType($expr);
             }
-            $functionReflection = $this->reflectionProvider->getFunction($functionName, $scope);
+            $functionReflection = $this->reflectionProvider->getFunction($functionName, null);
             if (!$functionReflection instanceof NativeFunctionReflection) {
                 return $scope->getNativeType($expr);
             }
             return $scope->getType($expr);
         }
         return $scope->getNativeType($expr);
+    }
+    /**
+     * @param \PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\NullsafeMethodCall $call
+     */
+    private function isEnumTypeMatch($call, ObjectType $objectType) : bool
+    {
+        if (!$call->var instanceof ClassConstFetch) {
+            return \false;
+        }
+        // possibly enum
+        $classConstFetch = $call->var;
+        if (!$classConstFetch->class instanceof FullyQualified) {
+            return \false;
+        }
+        $className = $classConstFetch->class->toString();
+        if (!$this->reflectionProvider->hasClass($className)) {
+            return \false;
+        }
+        $classReflection = $this->reflectionProvider->getClass($className);
+        if (!$classReflection->isEnum()) {
+            return \false;
+        }
+        return $classReflection->getName() === $objectType->getClassName();
     }
 }
