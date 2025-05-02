@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../../src/multiplyBy10.php';
+
 use PHPUnit\Framework\TestCase;
 
 final class MultiplyByTenTest extends TestCase
