@@ -30,6 +30,9 @@ jobs:
       - name: Make Rector executable
         run: chmod +x ./vendor/bin/rector
 
+      - name: Make PHPUnit executable
+        run: chmod +x ./vendor/bin/phpunit
+
       - name: Run Pint
         run: ./vendor/bin/pint --test
 
