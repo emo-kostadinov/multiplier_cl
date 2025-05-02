@@ -40,7 +40,7 @@ jobs:
         run: ./vendor/bin/rector process --dry-run
 
       - name: Run PHPUnit Tests
-        run: ./vendor/bin/phpunit
+        run: ./vendor/bin/tests  # Specify the tests directory
 
       - name: Run Pest Tests
         run: ./vendor/bin/pest
