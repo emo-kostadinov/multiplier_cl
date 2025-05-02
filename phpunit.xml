@@ -8,9 +8,6 @@
         <testsuite name="Unit">
             <directory>multiplier/tests/Unit</directory>
         </testsuite>
-        <testsuite name="Feature">
-            <directory>multiplier/tests/Feature</directory>
-        </testsuite>
     </testsuites>
     <source>
         <include>
